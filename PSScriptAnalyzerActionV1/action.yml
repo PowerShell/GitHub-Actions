@@ -1,0 +1,13 @@
+name: 'PowerShell Script Analyzer'
+description: 'PowerShell Script Analyzer'
+inputs:
+  script:  # id of input
+    description: 'What to analyze'
+    required: true
+    default: './'
+outputs:
+  time: # id of output
+    description: 'The time we greeted you'
+runs:
+  using: node12
+  main: _init/index.js
