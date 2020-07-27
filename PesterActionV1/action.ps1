@@ -10,17 +10,21 @@ $path = Join-Path -Path $PSScriptRoot -ChildPath 'lib/ActionsCore.ps1'
 $Version = "5.0.2"
 
 Write-ActionInfo 'checking for Pester module...'
-$module = Get-Module -ListAvailable Pester
-if(!$module -and $module.Version -ne ${Version} ) {
-    Write-ActionInfo 'installing Pester module...'
+$modules = Get-Module -ListAvailable -Name Pester
+$neededVersion = $modules | Where-Object { $_.Version -eq ${Version} }
+if ( $neededVersion ) {
+    Write-ActionInfo 'Pester module already installed.'
+}
+else{
+    Write-ActionInfo 'installing Pester module version ${Version}...'
     $ProgressPreference = 'SilentlyContinue'
     Install-Module Pester -Force -RequiredVersion ${Version}
 }
-else{
-    Write-ActionInfo 'Pester module already installed.'
-}
 # Don't rely on autoloading
-Import-Module Pester -Force -RequiredVersion ${Version}
+if ( Get-Module -Name Pester -ErrorAction Ignore ) {
+    Remove-Module Pester
+    Import-Module Pester -Force -RequiredVersion ${Version}
+}
 
 ## Pull in some inputs
 $script = Get-ActionInput script -Required
