@@ -78,6 +78,13 @@ switch ($PSCmdlet.ParameterSetName) {
 
         $ScriptBlock = [scriptblock]::Create("$sudoCmd npm i -g @zeit/ncc ")
         Start-NativeExecution -ScriptBlock $ScriptBlock
+        Push-Location -Path $PSScriptRoot
+        try {
+            npm install
+        }
+        finally {
+            Pop-Location
+        }
     }
     default {
         throw "Unknow parameterset $($pscmdlet.ParameterSetName)"
