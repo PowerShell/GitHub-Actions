@@ -9,6 +9,7 @@ jobs:
   ubuntu_pester:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     name: A job to run Pester on ${{ matrix.os }}
