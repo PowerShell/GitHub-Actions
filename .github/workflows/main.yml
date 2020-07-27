@@ -6,9 +6,12 @@ on:
     branches:
       - master
 jobs:
-  hello_world_job:
-    runs-on: ubuntu-latest
-    name: A job to run Pester
+  ubuntu_pester:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-lastest]
+    name: A job to run Pester on ${{ matrix.os }}
     steps:
     - name: checkout
       uses: actions/checkout@v2
