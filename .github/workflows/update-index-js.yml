@@ -1,0 +1,46 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
+
+name: Update index.js
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    paths:
+      - 'PesterActionV1/invoke-pwsh.js'
+defaults:
+  run:
+    shell: pwsh
+env:
+  UPDATE_SCRIPT_PATH: ./PesterActionV1/build.ps1
+jobs:
+  update_index_js:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # See https://brew.sh
+      - name: Bootstrap
+        run: |
+          &$env:UPDATE_SCRIPT_PATH -Bootstrap -Sudo
+      - name: Update Index.js
+        run: |
+          &$env:UPDATE_SCRIPT_PATH
+      - name: (On Push) Create Pull Request
+        if: github.event_name == 'push'
+        id: cpr
+        uses: peter-evans/create-pull-request@v2
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          commit-message: "Update Index.Js"
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          title: "Update Index.js"
+          assignees: travisez13
+          reviewers: travisez13
+          base: master
+          draft: false
+          branch: pester-action-update-index-js
