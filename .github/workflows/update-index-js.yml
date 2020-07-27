@@ -24,7 +24,7 @@ jobs:
       # See https://brew.sh
       - name: Bootstrap
         run: |
-          &$env:UPDATE_SCRIPT_PATH -Bootstrap
+          &$env:UPDATE_SCRIPT_PATH -Bootstrap -Sudo
       - name: Update Index.js
         run: |
           &$env:UPDATE_SCRIPT_PATH

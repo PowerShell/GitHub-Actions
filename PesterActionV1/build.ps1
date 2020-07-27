@@ -1,9 +1,12 @@
-[CmdletBinding(DefaultParameterSetName='build')]
+[CmdletBinding(DefaultParameterSetName = 'build')]
 param(
-    [parameter(ParameterSetName='bootstrap',Mandatory)]
+    [parameter(ParameterSetName = 'bootstrap', Mandatory)]
     [switch]
     $Bootstrap,
-    [parameter(ParameterSetName='build')]
+    [parameter(ParameterSetName = 'bootstrap')]
+    [switch]
+    $Sudo,
+    [parameter(ParameterSetName = 'build')]
     [switch]
     $Build
 
@@ -21,7 +24,13 @@ switch ($PSCmdlet.ParameterSetName) {
         }
     }
     'bootstrap' {
-        npm i -g @zeit/ncc
+        $sudoCmd = ''
+        if ($Sudo.IsPresent) {
+            $sudoCmd = 'sudo'
+        }
+
+        $sb = [scriptblock]::Create("$sudoCmd npm i -g @zeit/ncc ")
+        Invoke-Expression -Command $sb
     }
     default {
         throw "Unknow parameterset $($pscmdlet.ParameterSetName)"
