@@ -11,6 +11,7 @@ $Version = Get-ActionInput Version
 $installModParams = @{ Name = 'Pester'; Force = $true }
 
 if ($Version) {
+    Write-ActionInfo 'adding required version...'
     $installModParams.Add('RequiredVersion', $Version)
 }
 
