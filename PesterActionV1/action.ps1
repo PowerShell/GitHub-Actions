@@ -5,16 +5,21 @@
 $path = Join-Path -Path $PSScriptRoot -ChildPath 'lib/ActionsCore.ps1'
 . $path
 
-# replace with parameter/configuration when available 
-# $Version = Get-ActionInput Version -Required
-$Version = "5.0.2"
+# replace with parameter/configuration when available
+$Version = Get-ActionInput Version
+
+$installModParams = @{ Name = 'Pester'; Force = $true }
+
+if ($Version) {
+    $installModParams.Add('RequiredVersion', $Version)
+}
 
 Write-ActionInfo 'checking for Pester module...'
 $module = Get-Module -ListAvailable Pester
 if(!$module -and $module.Version -ne ${Version} ) {
     Write-ActionInfo 'installing Pester module...'
     $ProgressPreference = 'SilentlyContinue'
-    Install-Module Pester -Force -RequiredVersion ${Version}
+    Install-Module @installModParams
 }
 else{
     Write-ActionInfo 'Pester module already installed.'
