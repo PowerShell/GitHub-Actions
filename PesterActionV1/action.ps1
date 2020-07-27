@@ -5,16 +5,22 @@
 $path = Join-Path -Path $PSScriptRoot -ChildPath 'lib/ActionsCore.ps1'
 . $path
 
+# replace with parameter/configuration when available 
+# $Version = Get-ActionInput Version -Required
+$Version = "5.0.2"
+
 Write-ActionInfo 'checking for Pester module...'
 $module = Get-Module -ListAvailable Pester
-if(!$module) {
+if(!$module -and $module.Version -ne ${Version} ) {
     Write-ActionInfo 'installing Pester module...'
     $ProgressPreference = 'SilentlyContinue'
-    Install-Module Pester -Force
+    Install-Module Pester -Force -RequiredVersion ${Version}
 }
 else{
     Write-ActionInfo 'Pester module already installed.'
 }
+# Don't rely on autoloading
+Import-Module Pester -Force -RequiredVersion ${Version}
 
 ## Pull in some inputs
 $script = Get-ActionInput script -Required
@@ -23,10 +29,11 @@ Write-ActionInfo "running Pester on '$script'"
 
 $r = Invoke-Pester -Script $script -PassThru
 
-Write-ActionInfo ($r | Out-String)
+Write-ActionInfo ($r | Format-List Result,ExecutedAt,*Count | Out-String)
 
-if($r)
+if($r.Result -ne "Passed")
 {
-    Write-ActionError "Pester found issues"
+    $message = $r.failed | ft name,@{L="ErrorMessage";E={$_.ErrorRecord.DisplayErrorMessage}} -wrap | out-string
+    Write-ActionError $message
     Throw "Pester found issues"
 }
