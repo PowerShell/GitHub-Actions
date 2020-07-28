@@ -1,4 +1,4 @@
-Import-Module -Name 'C:\Users\t-chenju\workspace\GitHub-Actions\PesterActionV1\lib\ActionsCore.psm1'
+Import-Module -Name 'PesterActionV1\lib\ActionsCore.psm1'
 
 Describe "Send-ActionVariable" {
     it "Contructs command string correctly" {
