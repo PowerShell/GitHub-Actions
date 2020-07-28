@@ -47,11 +47,6 @@ $script = Get-ActionInput script -Required
 # Format of string: "Tag1,Tag2,Tag3,..."
 $tagString = Get-ActionInput PesterTags
 $tags = $tagString -split ','
-# TODO: Test only
-foreach ($tag in $tags)
-{
-    Write-ActionInfo ("Pester tag: $tag")
-}
 
 Write-ActionInfo ("running Pester version {0} on '$script'" -f $importedModule.Version)
 
@@ -61,7 +56,7 @@ Set-ActionOutput -Name 'logPath' -Value (Join-Path -Path $PWD.ProviderPath  -Chi
 
 Write-ActionInfo ("Chosen LogFormat: {0} with filename: {1}" -f $logFormat, $logFileName)
 
-$r = Invoke-Pester -Script $script -PassThru -OutputFormat $logFormat -OutputFile $logFileName  # -Tag $tags
+$r = Invoke-Pester -Script $script -PassThru -OutputFormat $logFormat -OutputFile $logFileName  -Tag $tags
 
 Write-ActionInfo ($r | Format-List Result,ExecutedAt,*Count | Out-String)
 

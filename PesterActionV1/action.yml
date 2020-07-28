@@ -16,7 +16,7 @@ inputs:
   PesterTags:
     description: 'Tags for Pester test'
     required: false
-    default: "tag1,tag2"
+    default: ''   # 'tag1,tag2'
 
 outputs:
   logPath: # id of output
