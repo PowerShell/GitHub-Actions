@@ -38,20 +38,28 @@ else {
 }
 
 # Don't rely on autoloading
-Import-Module @installModParams
+$importedModule = Import-Module @installModParams -PassThru
 
 ## Pull in some inputs
 $script = Get-ActionInput script -Required
 
-Write-ActionInfo "running Pester on '$script'"
+Write-ActionInfo ("running Pester version {0} on '$script'" -f $importedModule.Version)
 
 $r = Invoke-Pester -Script $script -PassThru
 
 Write-ActionInfo ($r | Format-List Result,ExecutedAt,*Count | Out-String)
 
-if ($r.Result -ne "Passed")
+if ( $importedModule.Version -ge "5.0.0" ) {
+    $result = $r.Result
+    $pesterErrors = $r.failed | Format-Table name,@{L="ErrorMessage";E={$_.ErrorRecord.DisplayErrorMessage}} -wrap | out-string
+}
+else {
+    $result = $r.TestResult.Result
+    $pesterErrors = $r.TestResult | Format-Table name,@{L="ErrorMessage";E={$_.ErrorRecord.DisplayErrorMessage}} -wrap | out-string
+}
+
+if ($result -ne "Passed")
 {
-    $message = $r.failed | ft name,@{L="ErrorMessage";E={$_.ErrorRecord.DisplayErrorMessage}} -wrap | out-string
     Write-ActionError $message
     Throw "Pester found issues"
 }
