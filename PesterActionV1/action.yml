@@ -15,8 +15,8 @@ inputs:
     default: NUnitXml
 
 outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  logPath: # id of output
+    description: 'The path to the log xml'
 runs:
   using: node12
   main: _init/index.js
