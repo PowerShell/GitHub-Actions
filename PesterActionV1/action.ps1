@@ -47,6 +47,7 @@ Write-ActionInfo ("running Pester version {0} on '$script'" -f $importedModule.V
 
 $logFormat = Get-ActionInput logformat -Required
 $logFileName = 'testresults-{0}.xml' -f (New-Guid)
+Set-ActionOutput -Name 'logPath' -Value (Resolve-Path -Path $logFileName).ProviderPath
 
 Write-ActionInfo ("Chosen LogFormat: {0} with filename: {1}" -f $logFormat, $logFileName)
 
