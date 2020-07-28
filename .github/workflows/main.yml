@@ -24,6 +24,11 @@ jobs:
       uses: ./PesterActionV1
       with:
         script: 'tests/sample'
+    - name: Verified passed
+      run: |
+          if ( '${{ steps.pester.outputs.result }}' -ne 'passed'){
+            throw 'test did not pass'
+          }
     - name: Upload pester results
       uses: actions/upload-artifact@v2
       with:
@@ -37,7 +42,7 @@ jobs:
         script: 'tests/failing'
     - name: Verified failed
       run: |
-          if ( '${{ steps.pester.outputs.result }}' -ne 'failed'){
+          if ( '${{ steps.pesterFailing.outputs.result }}' -ne 'failed'){
             throw 'test did not fail'
           }
     - name: Upload pester failing results
