@@ -45,7 +45,12 @@ $script = Get-ActionInput script -Required
 
 Write-ActionInfo ("running Pester version {0} on '$script'" -f $importedModule.Version)
 
-$r = Invoke-Pester -Script $script -PassThru
+$logFormat = Get-ActionInput logformat -Required
+$logFileName = 'testresults-{0}.xml' -f (New-Guid)
+
+Write-ActionInfo ("Chosen LogFormat: {0} with filename: {1}" -f $logFormat, $logFileName)
+
+$r = Invoke-Pester -Script $script -PassThru -OutputFormat $logFormat -OutputFile $logFileName
 
 Write-ActionInfo ($r | Format-List Result,ExecutedAt,*Count | Out-String)
 
