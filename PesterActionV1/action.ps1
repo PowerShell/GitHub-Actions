@@ -1,9 +1,8 @@
 #!/usr/bin/env pwsh
 
-## Load up some common functionality for interacting
+## Load the common function helper module for interacting
 ## with the GitHub Actions/Workflow environment
-$path = Join-Path -Path $PSScriptRoot -ChildPath 'lib/ActionsCore.ps1'
-. $path
+Import-Module -Name "$PSScriptRoot/lib/ActionsCore.psm1"
 
 # replace with parameter/configuration when available
 $Version = Get-ActionInput Version
@@ -16,12 +15,12 @@ if ($Version) {
 
 Write-ActionInfo 'checking for Pester module...'
 $module = Get-Module -ListAvailable Pester
-if(!$module -and $module.Version -ne ${Version} ) {
+if (!$module -and $module.Version -ne ${Version} ) {
     Write-ActionInfo 'installing Pester module...'
     $ProgressPreference = 'SilentlyContinue'
     Install-Module @installModParams
 }
-else{
+else {
     Write-ActionInfo 'Pester module already installed.'
 }
 # Don't rely on autoloading
@@ -36,7 +35,7 @@ $r = Invoke-Pester -Script $script -PassThru
 
 Write-ActionInfo ($r | Format-List Result,ExecutedAt,*Count | Out-String)
 
-if($r.Result -ne "Passed")
+if ($r.Result -ne "Passed")
 {
     $message = $r.failed | ft name,@{L="ErrorMessage";E={$_.ErrorRecord.DisplayErrorMessage}} -wrap | out-string
     Write-ActionError $message
