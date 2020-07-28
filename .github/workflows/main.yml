@@ -26,3 +26,19 @@ jobs:
       with:
         name: pester-results-${{ matrix.os }}
         path: ${{ steps.pester.outputs.logPath }}
+    - name: Run failing tests
+      id: pesterFailing
+      uses: ./PesterActionV1
+      continue-on-error: true
+      with:
+        script: 'tests/failing'
+    - name: Verified failed
+      run: |
+          if ( '${{ steps.pester.outputs.logPath }}' -ne 'failed'){
+            throw 'test did not fail'
+          }
+    - name: Upload pester failing results
+      uses: actions/upload-artifact@v2
+      with:
+        name: pester-failing-results-${{ matrix.os }}
+        path: ${{ steps.pesterFailing.outputs.logPath }}

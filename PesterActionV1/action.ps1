@@ -66,6 +66,9 @@ else {
 
 if ($result -ne "Passed")
 {
+    Set-ActionOutput -Name 'result' -Value 'failed'
     Write-ActionError $message
     Throw "Pester found issues"
 }
+
+Set-ActionOutput -Name 'result' -Value 'passed'
