@@ -5,6 +5,9 @@ on:
   pull_request:
     branches:
       - master
+defaults:
+  run:
+    shell: pwsh
 jobs:
   test_Pester_Action:
     runs-on: ${{ matrix.os }}
@@ -34,7 +37,7 @@ jobs:
         script: 'tests/failing'
     - name: Verified failed
       run: |
-          if ( '${{ steps.pester.outputs.logPath }}' -ne 'failed'){
+          if ( '${{ steps.pester.outputs.result }}' -ne 'failed'){
             throw 'test did not fail'
           }
     - name: Upload pester failing results
