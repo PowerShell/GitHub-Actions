@@ -14,30 +14,52 @@ if ($Version) {
 }
 
 Write-ActionInfo 'checking for Pester module...'
-$module = Get-Module -ListAvailable Pester
-if (!$module -and $module.Version -ne ${Version} ) {
-    Write-ActionInfo 'installing Pester module...'
+
+# find out if pester is installed and what the versions are
+# if the version is specified and doesn't exist, we'll need to install it
+# if the version is not specified and pester is installed we'll use what's installed
+$modules = Get-Module -ListAvailable Pester
+$requiredPester = $null
+if ( $Version ) {
+    $requiredPester = $modules | Where-Object {$_.Version -eq $Version}
+}
+else {
+    $requiredPester = $modules | Sort-Object Version | Select-Object -Last 1
+}
+
+if ( $requiredPester ) {
+    Write-ActionInfo ('Pester module version {0} already installed.' -f $requiredPester.Version)
+}
+else {
+    # if version is provided we'll get it, otherwise we get what we get
+    Write-ActionInfo 'installing Pester module {0}...' -f "version: ${version}"
     $ProgressPreference = 'SilentlyContinue'
     Install-Module @installModParams
 }
-else {
-    Write-ActionInfo 'Pester module already installed.'
-}
+
 # Don't rely on autoloading
-Import-Module Pester -Force -RequiredVersion ${Version}
+$importedModule = Import-Module @installModParams -PassThru
 
 ## Pull in some inputs
 $script = Get-ActionInput script -Required
 
-Write-ActionInfo "running Pester on '$script'"
+Write-ActionInfo ("running Pester version {0} on '$script'" -f $importedModule.Version)
 
 $r = Invoke-Pester -Script $script -PassThru
 
 Write-ActionInfo ($r | Format-List Result,ExecutedAt,*Count | Out-String)
 
-if ($r.Result -ne "Passed")
+if ( $importedModule.Version -ge "5.0.0" ) {
+    $result = $r.Result
+    $pesterErrors = $r.failed | Format-Table name,@{L="ErrorMessage";E={$_.ErrorRecord.DisplayErrorMessage}} -wrap | out-string
+}
+else {
+    $result = $r.TestResult.Result
+    $pesterErrors = $r.TestResult | Format-Table name,@{L="ErrorMessage";E={$_.ErrorRecord.DisplayErrorMessage}} -wrap | out-string
+}
+
+if ($result -ne "Passed")
 {
-    $message = $r.failed | ft name,@{L="ErrorMessage";E={$_.ErrorRecord.DisplayErrorMessage}} -wrap | out-string
     Write-ActionError $message
     Throw "Pester found issues"
 }
