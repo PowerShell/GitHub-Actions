@@ -44,9 +44,9 @@ $importedModule = Import-Module @installModParams -PassThru
 $script = Get-ActionInput script -Required
 
 # Retrieve a tags string
-# Format of string: "Tag1,Tag2,Tag3,..."
+# Format of string: "Tag1, Tag2,Tag3,..."
 $tagString = Get-ActionInput tags
-$tags = $tagString -split ','
+$tags = [string[]] ($tagString -split ',' | ForEach-Object { $_.Trim() })
 
 Write-ActionInfo ("running Pester version {0} on '$script'" -f $importedModule.Version)
 
