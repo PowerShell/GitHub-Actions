@@ -18,7 +18,7 @@ defaults:
 jobs:
   test_Pester_Action:
     runs-on: ubuntu-latest
-    name: A job to run Pester on ${{ matrix.os }}
+    name: Run Pester
     steps:
     - name: checkout
       uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
     - name: Upload pester results
       uses: actions/upload-artifact@v2
       with:
-        name: pester-results-${{ matrix.os }}
+        name: pester-results
         path: ${{ steps.pesterTests.outputs.logPath }}
 ```
 ## Other Inputs
@@ -46,7 +46,7 @@ Example:
     - name: Upload pester results
       uses: actions/upload-artifact@v2
       with:
-        name: pester-results-${{ matrix.os }}
+        name: pester-results
         path: ${{ steps.pesterTests.outputs.logPath }
         version: 4.9
 ```
@@ -63,7 +63,7 @@ Example:
     - name: Upload pester results
       uses: actions/upload-artifact@v2
       with:
-        name: pester-results-${{ matrix.os }}
+        name: pester-results
         path: ${{ steps.pesterTests.outputs.logPath }
         logFormat: JUnitXml
 ```
@@ -79,7 +79,7 @@ Example which runs only `myTag` and `myTag2`:
     - name: Upload pester results
       uses: actions/upload-artifact@v2
       with:
-        name: pester-results-${{ matrix.os }}
+        name: pester-results
         path: ${{ steps.pesterTests.outputs.logPath }
-        tags: myTag, myTag2
+        tags: myTag,myTag2
 ```
