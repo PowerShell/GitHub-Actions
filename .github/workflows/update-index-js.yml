@@ -8,12 +8,12 @@ on:
       - master
   pull_request:
     paths:
-      - 'PesterActionV1/invoke-pwsh.js'
+      - 'src/invoke-pwsh.js'
 defaults:
   run:
     shell: pwsh
 env:
-  UPDATE_SCRIPT_PATH: ./PesterActionV1/build.ps1
+  UPDATE_SCRIPT_PATH: ./build.ps1
 jobs:
   update_index_js:
     timeout-minutes: 15
@@ -44,3 +44,16 @@ jobs:
           base: master
           draft: false
           branch: pester-action-update-index-js
+      - name: (On PR) Fail if change
+        if: github.event_name == 'pull_request'
+        run: |
+          $results = git status --porcelain -s ./PesterActionV1/_init/index.js
+          if($results.count -gt 0) {
+            throw "Please update index.js"
+          }
+      - name: (On PR and Change needed) Upload pester failing results
+        if: ${{ failure() && github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: index.js
+          path: ./PesterActionV1/_init/index.js

@@ -61,14 +61,9 @@ function script:Start-NativeExecution
 
 switch ($PSCmdlet.ParameterSetName) {
     'build' {
-        Push-Location -Path $PSScriptRoot
-        try {
-            $scripPath = (Resolve-Path .\invoke-pwsh.js).ProviderPath
-            ncc build $scripPath -o _init
-        }
-        finally {
-            Pop-Location
-        }
+        $scriptPath = Join-Path -Path $PSScriptRoot -ChildPath 'src\invoke-pwsh.js'
+        $destinationPath = Join-Path -Path $PSScriptRoot -ChildPath "PesterActionV1\_init"
+        ncc build -m $scriptPath -o $destinationPath
     }
     'bootstrap' {
         $sudoCmd = ''
@@ -78,7 +73,7 @@ switch ($PSCmdlet.ParameterSetName) {
 
         $ScriptBlock = [scriptblock]::Create("$sudoCmd npm i -g @zeit/ncc ")
         Start-NativeExecution -ScriptBlock $ScriptBlock
-        Push-Location -Path $PSScriptRoot
+        Push-Location -Path $PSScriptRoot\src
         try {
             npm install
         }
