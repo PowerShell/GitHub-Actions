@@ -13,10 +13,17 @@ inputs:
     description: 'Log format for the Pester test'
     required: false
     default: NUnitXml
+  Tags:
+    description: 'Tags for Pester test'
+    required: false
+    default: ''   # 'tag1,tag2'
 
 outputs:
   logPath: # id of output
     description: 'The path to the log xml'
+  result: # id of output
+    description: '"passed" if all tests passed, "failed" if a test failed'
+
 runs:
   using: node12
   main: _init/index.js
