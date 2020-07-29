@@ -45,7 +45,7 @@ $script = Get-ActionInput script -Required
 
 # Retrieve a Pester tags string
 # Format of string: "Tag1,Tag2,Tag3,..."
-$tagString = Get-ActionInput PesterTags
+$tagString = Get-ActionInput Tags
 $tags = $tagString -split ','
 
 Write-ActionInfo ("running Pester version {0} on '$script'" -f $importedModule.Version)
