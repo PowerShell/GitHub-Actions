@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 
-## Load the common function helper module for interacting
-## with the GitHub Actions/Workflow environment
+# Load the common function helper module for interacting
+# with the GitHub Actions/Workflow environment
 Import-Module -Name "$PSScriptRoot/lib/ActionsCore.psm1"
 
 # replace with parameter/configuration when available
@@ -40,8 +40,13 @@ else {
 # Don't rely on autoloading
 $importedModule = Import-Module @installModParams -PassThru
 
-## Pull in some inputs
+# Pull in some inputs
 $script = Get-ActionInput script -Required
+
+# Retrieve a tags string
+# Format of string: "Tag1,Tag2,Tag3,..."
+$tagString = Get-ActionInput Tags
+$tags = $tagString -split ','
 
 Write-ActionInfo ("running Pester version {0} on '$script'" -f $importedModule.Version)
 
@@ -51,7 +56,7 @@ Set-ActionOutput -Name 'logPath' -Value (Join-Path -Path $PWD.ProviderPath  -Chi
 
 Write-ActionInfo ("Chosen LogFormat: {0} with filename: {1}" -f $logFormat, $logFileName)
 
-$r = Invoke-Pester -Script $script -PassThru -OutputFormat $logFormat -OutputFile $logFileName
+$r = Invoke-Pester -Script $script -PassThru -OutputFormat $logFormat -OutputFile $logFileName  -Tag $tags
 
 Write-ActionInfo ($r | Format-List Result,ExecutedAt,*Count | Out-String)
 
