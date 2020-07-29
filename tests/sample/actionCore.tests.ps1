@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
+
 Import-Module -Name 'PesterActionV1\lib\ActionsCore.psm1'
 
 Describe "Send-ActionVariable" {
